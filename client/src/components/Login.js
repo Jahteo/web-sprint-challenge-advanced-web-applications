@@ -1,5 +1,5 @@
 import React, { useReducer, useState } from "react";
-// import { axiosWithAuth } from "../utils/axiosWithAuth";
+import { axiosWithAuth } from "./utils/axiosWithAuth";
 import { useHistory } from "react-router-dom"
 
 const Login = () => {
@@ -20,14 +20,20 @@ const Login = () => {
 
   const login = (e) => {
     e.preventDefault();
-
+    axiosWithAuth()
+      .post("/api/login", user)
+      .then(res => {
+        // console.log(res.data.payload )
+        localStorage.setItem("token", res.data.payload);
+        history.push("/bubbles-page")
+      })
   };
 
   return (
     <>
       <h1>Welcome to the Bubble App!</h1>
       <p>Build a login page here</p>
-      <form >
+      <form onSubmit={login}>
         <input
           type="text"
           name="username"
