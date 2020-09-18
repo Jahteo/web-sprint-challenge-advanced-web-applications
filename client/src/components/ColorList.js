@@ -1,15 +1,18 @@
 import React, { useState } from "react";
+import { axiosWithAuth } from "./utils/axiosWithAuth";
 import axios from "axios";
 
 const initialColor = {
   color: "",
-  code: { hex: "" }
+  code: { hex: "" },
+  id: undefined
 };
 
-const ColorList = ({ colors, updateColors }) => {
+const ColorList = ({ colors, updateColors, getColors }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
+  console.log(colorToEdit)
 
   const editColor = color => {
     setEditing(true);
@@ -21,10 +24,27 @@ const ColorList = ({ colors, updateColors }) => {
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    axiosWithAuth()
+      .put(`/api/colors/${colorToEdit.id}`, colorToEdit)
+      .then(res => {
+        console.log("SUCCESS!", res)
+        //WHY DOES THIS ALWAYS BREAK IT?!?!?!?!?!?!?!
+        // updateColors(res)
+        //weird workaround of an api call instead of just setting it in state to match...:
+        getColors()
+      })
+      .catch(e => {console.log(`STOP BREAKING ME! ${e}`)})
   };
 
   const deleteColor = color => {
     // make a delete request to delete this color
+    axiosWithAuth()
+      .delete(`/api/colors/${color.id}`)
+      .then(res => {
+        console.log("SUCCESS!")
+        getColors();
+      })
+      .catch(e => {console.log("ABJECT FAILURE!")})
   };
 
   return (
